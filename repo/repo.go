@@ -27,7 +27,7 @@ func initRepo() {
 	}
 }
 
-func GetLibro(id string) Libro {
+func ObtenerLibro(id string) Libro {
 	initRepo()
 
 	libro := libros[id]
@@ -41,7 +41,7 @@ func InsertarLibro(libro Libro) {
 	libros[libro.ID] = libro
 }
 
-func AllLibros() []Libro {
+func TodosLibros() []Libro {
 	initRepo()
 
 	var librosSlice []Libro
@@ -53,7 +53,7 @@ func AllLibros() []Libro {
 	return librosSlice
 }
 
-func DeleteLibro(id string) error {
+func BorrarLibro(id string) error {
 	initRepo()
 
 	if _, existe := libros[id]; !existe {
@@ -66,7 +66,7 @@ func DeleteLibro(id string) error {
 	return nil
 }
 
-func UpdateLibro(id string, libro Libro) error {
+func ActualizarLibro(id string, libro Libro) error {
 	libro.ID = id // for avoiding user to change ID
 
 	if _, existe := libros[id]; !existe {

@@ -24,8 +24,8 @@ func logFatalIf(err error) {
 func obtenerLibros(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	encoder := json.NewEncoder(w)
-	books := repo.AllBooks()
-	encoder.Encode(books)
+	libros := repo.TodosLibros()
+	encoder.Encode(libros)
 }
 
 func obtenerLibro(w http.ResponseWriter, r *http.Request) {
@@ -36,17 +36,17 @@ func obtenerLibro(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	encoder := json.NewEncoder(w)
 
-	book := repo.GetBook(id)
+	libro := repo.ObtenerLibro(id)
 
-	encoder.Encode(book)
+	encoder.Encode(libro)
 }
 
 func crearLibro(w http.ResponseWriter, r *http.Request) {
-	var book repo.Book
+	var libro repo.Libro
 	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&book)
+	err := decoder.Decode(&libro)
 
-	book.ID = strconv.Itoa(rand.Intn(100000000))
+	libro.ID = strconv.Itoa(rand.Intn(100000000))
 
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
@@ -57,7 +57,7 @@ func crearLibro(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 
-	repo.InsertBook(book)
+	repo.InsertarLibro(libro)
 
 	respuesta := Respuesta{
 		Exito:   true,
@@ -73,9 +73,9 @@ func actualizarLibro(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	encoder := json.NewEncoder(w)
 
-	var book repo.Book
+	var libro repo.Libro
 
-	if err := decoder.Decode(&book); err != nil {
+	if err := decoder.Decode(&libro); err != nil {
 		respuesta := Respuesta{Exito: false, Mensaje: "El formato del libro no es correcto"}
 		encoder.Encode(respuesta)
 		return
@@ -85,7 +85,7 @@ func actualizarLibro(w http.ResponseWriter, r *http.Request) {
 
 	id := params["id"]
 
-	if err := repo.UpdateBook(id, book); err != nil {
+	if err := repo.ActualizarLibro(id, libro); err != nil {
 		respuesta := Respuesta{Exito: false, Mensaje: err.Error()}
 		encoder.Encode(respuesta)
 		return
@@ -106,7 +106,7 @@ func borrarLibro(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	err := repo.DeleteBook(id)
+	err := repo.BorrarLibro(id)
 	var respuesta Respuesta
 
 	respuesta.Exito = err == nil
@@ -114,7 +114,7 @@ func borrarLibro(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		respuesta.Mensaje = err.Error()
 	} else {
-		respuesta.Mensaje = "Succesful operation"
+		respuesta.Mensaje = "Operacion exitosa"
 	}
 
 	encoder := json.NewEncoder(w)
